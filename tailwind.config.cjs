@@ -5,8 +5,6 @@ const config = {
   ],
 
   plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'),
     require('flowbite/plugin')
   ],
 
