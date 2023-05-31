@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import '../app.postcss'
 	import { Navbar, Button, NavBrand } from 'flowbite-svelte'
 	export let data
