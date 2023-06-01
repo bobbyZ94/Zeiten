@@ -6,7 +6,7 @@
 
 <div class="flex h-screen w-full flex-col">
 	<Navbar class="z-20 px-3 py-5">
-		<NavBrand href="/">
+		<NavBrand>
 			<span class="self-center whitespace-nowrap text-xl font-semibold sm:text-2xl"
 				>Z E I T E N</span
 			>
