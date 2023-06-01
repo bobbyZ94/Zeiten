@@ -4,11 +4,13 @@
 	import DayGrid from '@event-calendar/day-grid'
 	import Interaction from '@event-calendar/interaction'
 	export let username: any
-	export let color: any
-	let defaultModal = false
+
+	let shiftModal = false
+	let rmShiftModal = false
+	let dateClickObject: any
+	let eventClickObject: any
 
 	let ec: any
-	let currentEvent: any
 	let plugins = [DayGrid, Interaction]
 	let options = {
 		view: 'dayGridMonth',
@@ -18,68 +20,55 @@
 			return `${info.event.title}`
 		},
 		dateClick: function (info: any) {
-			currentEvent = info
-			defaultModal = true
+			// only open modal if worker has no shift
+			const shiftOnClickedDay = ec
+				.getEvents()
+				.filter((event: any) => event.start.toDateString() === info.date.toDateString())
+				.filter((event: any) => event.title === username)
+			if (shiftOnClickedDay.length === 0) {
+				dateClickObject = info
+				shiftModal = true
+			}
 		},
 		eventClick: function (info: any) {
-			currentEvent = info
-			defaultModal = true
+			eventClickObject = info
+			rmShiftModal = true
 		},
 		events: [
 			// your list of events
 		]
 	}
 
-	function addWork(currentEvent: any) {
-		if (ec.getEventById(currentEvent?.event?.id)) {
-			ec.updateEvent({
-				start: currentEvent.dateStr,
-				end: currentEvent.dateStr,
-				title: username,
-				backgroundColor: 'green'
-			})
-		} else {
-			ec.addEvent({
-				start: currentEvent.dateStr,
-				end: currentEvent.dateStr,
-				title: username,
-				backgroundColor: 'green'
-			})
+	function addShift(dateClickObject: any) {
+		ec.addEvent({
+			start: dateClickObject.date,
+			end: dateClickObject.date,
+			title: username,
+			backgroundColor: 'green'
+		})
+	}
+
+	function rmShift(eventClickObject: any) {
+		if (eventClickObject.event.title === username) {
+			ec.removeEventById(eventClickObject.event.id)
 		}
 	}
 
-	function removeWork(currentEvent: any) {
-		if (currentEvent.event.title === username) {
-			ec.removeEventById(currentEvent.event.id)
-		}
-	}
-
-	function addWorkMaybe(currentEvent: any) {
-		if (ec.getEventById(currentEvent?.event?.id)) {
-			ec.updateEvent({
-				start: currentEvent.dateStr,
-				end: currentEvent.dateStr,
-				title: username,
-				backgroundColor: 'gray'
-			})
-		} else {
-			ec.addEvent({
-				start: currentEvent.dateStr,
-				end: currentEvent.dateStr,
-				title: username,
-				backgroundColor: 'gray'
-			})
-		}
+	function addPossibleShift(dateClickObject: any) {
+		ec.addEvent({
+			start: dateClickObject.date,
+			end: dateClickObject.date,
+			title: username,
+			backgroundColor: 'gray'
+		})
 	}
 </script>
 
 <Calendar bind:this={ec} {plugins} {options} />
-<Modal title="Work" bind:open={defaultModal} autoclose>
-	<p class="text-base leading-relaxed text-gray-700">Projekt X</p>
-	<p class="text-base leading-relaxed text-gray-700">Mengen X</p>
-	<svelte:fragment slot="footer">
-		<Button on:click={() => addWork(currentEvent)}>Ich kann Arbeiten</Button>
-		<Button on:click={() => addWorkMaybe(currentEvent)}>Ich kann vielleicht Arbeiten</Button>
-		<Button on:click={() => removeWork(currentEvent)}>Ich kann nicht Arbeiten</Button>
-	</svelte:fragment>
+<Modal title="Schicht hinzufügen" bind:open={shiftModal} autoclose outsideclose size="sm">
+	<Button class="mr-5" on:click={() => addShift(dateClickObject)}>Ich kann Arbeiten</Button>
+	<Button on:click={() => addPossibleShift(dateClickObject)}>Ich kann vielleicht Arbeiten</Button>
+</Modal>
+<Modal title="Schicht entfernen" bind:open={rmShiftModal} autoclose size="sm">
+	<Button on:click={() => rmShift(eventClickObject)}>Schicht entfernen</Button>
 </Modal>

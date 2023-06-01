@@ -24,7 +24,7 @@
 </script>
 
 <div class="mt-5 p-1">
-	<Calendar username={data.user.username} color={data.user.color} />
+	<Calendar username={data.user.username} />
 </div>
 
 <Drawer transitionType="fly" {transitionParams} bind:hidden={hidden3} id="sidebar3">
