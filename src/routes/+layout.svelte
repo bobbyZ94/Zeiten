@@ -5,17 +5,20 @@
 </script>
 
 <div class="flex h-screen w-full flex-col">
-	<Navbar>
+	<Navbar class="bg-slate-100 px-2 py-5">
 		<NavBrand href="/">
-			<span class="self-center whitespace-nowrap text-xl font-semibold">Z E I T E N</span>
+			<span class="self-center whitespace-nowrap text-xl font-semibold sm:text-2xl"
+				>Z E I T E N</span
+			>
 		</NavBrand>
-		<div class="h-8">
-			{#if data.user}
+		{#if data.user}
+			<div>Hallo <span class="font-semibold">{data.user.username}</span> 😀</div>
+			<div class="h-8">
 				<form action="/logout" method="POST">
 					<Button size="sm" type="submit">Logout</Button>
 				</form>
-			{/if}
-		</div>
+			</div>
+		{/if}
 	</Navbar>
 	<div class="flex-grow">
 		<slot />

@@ -9,12 +9,14 @@ export const POST = (async ({ request }) => {
   // Transform into Event Objects
   const res: any = []
   records.forEach((record) => res.push({
+    id: record.id,
     backgroundColor: record.backgroundColor,
     end: new Date(record.end),
     start: new Date(record.start),
     title: record.title,
     extendedProps: {
-      description: record.description
+      description: record.description,
+      username: record.username
     }
   }))
   return json(res);

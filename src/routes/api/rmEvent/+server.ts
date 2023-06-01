@@ -5,14 +5,7 @@ import PocketBase from 'pocketbase';
 const pb = new PocketBase('https://backend.geoz-sondierungen.de');
 
 export const POST = (async ({ request }) => {
-  const { start, end, title, backgroundColor, description, username } = await request.json()
-  const record = await pb.collection('events').create({
-    start,
-    end,
-    title,
-    backgroundColor,
-    description,
-    username,
-  })
+  const { id } = await request.json()
+  const record = await pb.collection('events').delete(id)
   return json(record);
 }) satisfies RequestHandler;
