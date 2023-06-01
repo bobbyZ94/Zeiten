@@ -5,7 +5,7 @@
 </script>
 
 <div class="flex h-screen w-full flex-col">
-	<Navbar class="bg-slate-100 px-2 py-5">
+	<Navbar class="z-20 px-3 py-5">
 		<NavBrand href="/">
 			<span class="self-center whitespace-nowrap text-xl font-semibold sm:text-2xl"
 				>Z E I T E N</span
