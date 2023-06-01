@@ -3,6 +3,7 @@
 	import Calendar from '@event-calendar/core'
 	import DayGrid from '@event-calendar/day-grid'
 	import Interaction from '@event-calendar/interaction'
+	import { v4 as uuidv4 } from 'uuid'
 	export let username: any
 
 	let shiftModal = false
@@ -51,16 +52,19 @@
 				rmShiftModal = true
 			}
 		},
-		events: [
-			// your list of events
+		eventSources: [
+			{
+				url: '/api/getEvents',
+				method: 'POST'
+			}
 		]
 	}
 
 	function addShift(dateClickObject: any) {
 		const start = dateClickObject.date
-		start.setHours(1)
+		start.setHours(9)
 		const end = dateClickObject.date
-		end.setHours(1)
+		end.setHours(9)
 		ec.addEvent({
 			start,
 			end,
@@ -71,9 +75,9 @@
 
 	function addPossibleShift(dateClickObject: any) {
 		const start = dateClickObject.date
-		start.setHours(1)
+		start.setHours(9)
 		const end = dateClickObject.date
-		end.setHours(1)
+		end.setHours(9)
 		ec.addEvent({
 			start,
 			end,
@@ -82,25 +86,43 @@
 		})
 	}
 
-	function addDate(
+	async function addDate(
 		dateClickObject: any,
 		backgroundColor = 'red',
 		title: any,
 		description: any = ''
 	) {
 		const start = dateClickObject.date
-		start.setHours(0)
+		start.setHours(8)
 		const end = dateClickObject.date
-		end.setHours(0)
-		ec.addEvent({
+		end.setHours(8)
+		const event = ec.addEvent({
 			start,
 			end,
 			title,
 			backgroundColor,
 			extendedProps: {
-				description
+				description,
+				username
+			},
+			id: uuidv4()
+		})
+		await fetch('/api/addEvent', {
+			method: 'POST',
+			body: JSON.stringify({
+				start,
+				end,
+				title,
+				backgroundColor,
+				description,
+				username,
+				id: event.id
+			}),
+			headers: {
+				'Content-Type': 'application/json'
 			}
 		})
+		ec.refetchEvents()
 	}
 
 	function rmDate(eventClickObject: any) {
