@@ -23,9 +23,9 @@
 		firstDay: 1,
 		eventDurationEditable: false,
 		eventStartEditable: username === 'Admin' ? true : false,
-		eventDrop: async function(info: any) {
+		eventDrop: async function (info: any) {
 			eventClickObject = info
-			commitDragModal = true
+			setTimeout(() => (commitDragModal = true), 1)
 		},
 		buttonText: { today: 'Heute' },
 		eventContent: function (info: any) {
@@ -41,19 +41,19 @@
 			if (dateOnClickedDay.length === 0) {
 				dateClickObject = info
 				if (username === 'Admin') {
-					adminModal = true
+					setTimeout(() => (adminModal = true), 1)
 				} else {
-					shiftModal = true
+					setTimeout(() => (shiftModal = true), 1)
 				}
 			}
 		},
 		eventClick: function (info: any) {
 			if (username === 'Admin') {
 				eventClickObject = info
-				rmAdminModal = true
+				setTimeout(() => (rmAdminModal = true), 1)
 			} else if (info.event.title === username) {
 				eventClickObject = info
-				rmShiftModal = true
+				setTimeout(() => (rmShiftModal = true), 1)
 			}
 		},
 		eventSources: [
@@ -130,9 +130,9 @@
 		await fetch('/api/updateEvent', {
 			method: 'POST',
 			body: JSON.stringify({
-			start: eventClickObject.event.start,
-			end: eventClickObject.event.end,
-			id: eventClickObject.event.id
+				start: eventClickObject.event.start,
+				end: eventClickObject.event.end,
+				id: eventClickObject.event.id
 			}),
 			headers: {
 				'Content-Type': 'application/json'
@@ -140,11 +140,12 @@
 		})
 		ec.refetchEvents()
 	}
+	let test = false
 </script>
 
 <Calendar bind:this={ec} {plugins} {options} />
 
-<Modal title="Schicht hinzufügen" bind:open={shiftModal} autoclose outsideclose size="sm">
+<Modal title="Schicht hinzufügen" bind:open={shiftModal} size="xl" autoclose outsideclose>
 	<Button class="mr-2" on:click={() => addShift(dateClickObject, false)}>Ich kann Arbeiten</Button>
 	<Button on:click={() => addShift(dateClickObject, true)}>Ich kann vielleicht Arbeiten</Button>
 </Modal>
@@ -180,20 +181,10 @@
 	>
 </Modal>
 
-<Modal
-	title='Termin entfernen?'
-	bind:open={rmAdminModal}
-	autoclose
-	size="sm"
->
+<Modal title="Termin entfernen?" bind:open={rmAdminModal} autoclose size="sm">
 	<Button on:click={() => rmDate(eventClickObject)}>Termin entfernen</Button>
 </Modal>
 
-<Modal
-	title='Termin verschieben?'
-	bind:open={commitDragModal}
-	autoclose
-	size="sm"
->
+<Modal title="Termin verschieben?" bind:open={commitDragModal} autoclose size="sm">
 	<Button on:click={() => commitDragFunction(eventClickObject)}>Termin verschieben</Button>
 </Modal>
