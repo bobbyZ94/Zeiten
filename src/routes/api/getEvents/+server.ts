@@ -1,14 +1,11 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import PocketBase from 'pocketbase';
 
-const pb = new PocketBase('https://backend.geoz-sondierungen.de');
-
-export const POST = (async ({ request }) => {
-  const records = await pb.collection('events').getFullList({$autoCancel: false})
+export const POST = (async ({ locals }) => {
+  const records = await locals.pb.collection('events').getFullList({$autoCancel: false})
   // Transform into Event Objects
   const res: any = []
-  records.forEach((record) => res.push({
+  records.forEach((record: any) => res.push({
     id: record.id,
     backgroundColor: record.backgroundColor,
     end: new Date(record.end),
@@ -16,7 +13,8 @@ export const POST = (async ({ request }) => {
     title: record.title,
     extendedProps: {
       description: record.description,
-      username: record.username
+      username: record.username,
+      checked: record.checked
     }
   }))
   return json(res);

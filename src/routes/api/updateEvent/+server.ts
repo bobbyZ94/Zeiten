@@ -1,14 +1,12 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import PocketBase from 'pocketbase';
 
-const pb = new PocketBase('https://backend.geoz-sondierungen.de');
-
-export const POST = (async ({ request }) => {
-  const { id, start, end } = await request.json()
-  const record = await pb.collection('events').update(id, {
+export const POST = (async ({ request, locals }) => {
+  const { id, start, end, checked } = await request.json()
+  const record = await locals.pb.collection('events').update(id, {
     start,
     end,
+    checked
   });
   return json(record);
 }) satisfies RequestHandler;

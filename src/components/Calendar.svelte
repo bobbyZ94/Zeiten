@@ -1,20 +1,24 @@
 <script lang="ts">
-	import { Modal, Button, Input, Label, Textarea } from 'flowbite-svelte'
+	import { Modal, Button, Input, Label, Textarea, Select } from 'flowbite-svelte'
 	import Calendar from '@event-calendar/core'
 	import DayGrid from '@event-calendar/day-grid'
 	import Interaction from '@event-calendar/interaction'
 	export let username: any
+	export let workers: any
 
 	let shiftModal = false
 	let rmShiftModal = false
-	let adminModal = false
-	let rmAdminModal = false
+	let adminChooseModal = false
+	let adminShiftModal = false
+	let adminDateModal = false
+	let updateAdminModal = false
 	let commitDragModal = false
 	let dateClickObject: any
 	let eventClickObject: any
 
 	let title: any
 	let description: any
+	let worker: any
 
 	let ec: any
 	let plugins = [DayGrid, Interaction]
@@ -29,28 +33,26 @@
 		},
 		buttonText: { today: 'Heute' },
 		eventContent: function (info: any) {
-			return `${info.event.title}
+			return `${info.event.title} ${info.event.extendedProps.checked ? '✔' : ''}
 			${info.event.extendedProps.description}`
 		},
 		dateClick: function (info: any) {
+			dateClickObject = info
 			// only open modal if no date
 			const dateOnClickedDay = ec
 				.getEvents()
 				.filter((event: any) => event.start.toDateString() === info.date.toDateString())
 				.filter((event: any) => event.extendedProps.username === username)
-			if (dateOnClickedDay.length === 0) {
-				dateClickObject = info
-				if (username === 'Admin') {
-					setTimeout(() => (adminModal = true), 1)
-				} else {
-					setTimeout(() => (shiftModal = true), 1)
-				}
+			if (dateOnClickedDay.length === 0 && username !== 'Admin') {
+				setTimeout(() => (shiftModal = true), 1)
+			} else {
+				setTimeout(() => (adminChooseModal = true), 1)
 			}
 		},
 		eventClick: function (info: any) {
 			if (username === 'Admin') {
 				eventClickObject = info
-				setTimeout(() => (rmAdminModal = true), 1)
+				setTimeout(() => (updateAdminModal = true), 1)
 			} else if (info.event.title === username) {
 				eventClickObject = info
 				setTimeout(() => (rmShiftModal = true), 1)
@@ -64,7 +66,7 @@
 		]
 	}
 
-	async function addShift(dateClickObject: any, maybe: boolean) {
+	async function addShift(dateClickObject: any, maybe: boolean, admin: boolean = false) {
 		const start = dateClickObject.date
 		start.setHours(9)
 		const end = dateClickObject.date
@@ -74,9 +76,9 @@
 			body: JSON.stringify({
 				start,
 				end,
-				title: username,
+				title: admin ? worker : username,
 				backgroundColor: maybe ? 'gray' : 'green',
-				username
+				username: admin ? worker : username
 			}),
 			headers: {
 				'Content-Type': 'application/json'
@@ -126,13 +128,14 @@
 		ec.refetchEvents()
 	}
 
-	async function commitDragFunction(eventClickObject: any) {
+	async function updateEvent(eventClickObject: any, checked: boolean = false) {
 		await fetch('/api/updateEvent', {
 			method: 'POST',
 			body: JSON.stringify({
 				start: eventClickObject.event.start,
 				end: eventClickObject.event.end,
-				id: eventClickObject.event.id
+				id: eventClickObject.event.id,
+				checked
 			}),
 			headers: {
 				'Content-Type': 'application/json'
@@ -140,21 +143,31 @@
 		})
 		ec.refetchEvents()
 	}
-	let test = false
 </script>
 
 <Calendar bind:this={ec} {plugins} {options} />
 
-<Modal title="Schicht hinzufügen" bind:open={shiftModal} size="xl" autoclose outsideclose>
+<Modal title="Schicht hinzufügen" bind:open={shiftModal} size="sm" autoclose outsideclose>
 	<Button class="mr-2" on:click={() => addShift(dateClickObject, false)}>Ich kann Arbeiten</Button>
 	<Button on:click={() => addShift(dateClickObject, true)}>Ich kann vielleicht Arbeiten</Button>
 </Modal>
 
-<Modal title="Schicht entfernen" bind:open={rmShiftModal} autoclose size="sm">
+<Modal title="Schicht bearbeiten?" bind:open={rmShiftModal} autoclose outsideclose size="sm">
 	<Button on:click={() => rmDate(eventClickObject)}>Schicht entfernen</Button>
 </Modal>
 
-<Modal title="Termin hinzufügen" bind:open={adminModal} autoclose size="md">
+<Modal
+	title="Termin oder Mitarbeiter hinzufügen?"
+	bind:open={adminChooseModal}
+	autoclose
+	outsideclose
+	size="sm"
+>
+	<Button class="mr-2" on:click={() => (adminDateModal = true)}>Termin hinzufügen</Button>
+	<Button on:click={() => (adminShiftModal = true)}>Mitarbeiter hinzufügen</Button>
+</Modal>
+
+<Modal title="Termin hinzufügen" bind:open={adminDateModal} autoclose outsideclose size="md">
 	<div class="grid gap-3">
 		<div>
 			<Label for="titel" class="mb-2">Titel</Label>
@@ -181,10 +194,38 @@
 	>
 </Modal>
 
-<Modal title="Termin entfernen?" bind:open={rmAdminModal} autoclose size="sm">
+<Modal title="Mitarbeiter hinzufügen" bind:open={adminShiftModal} autoclose outsideclose size="md">
+	<div>
+		<Label for="worker" class="mb-2">Mitarbeiter</Label>
+		<Select
+			bind:value={worker}
+			items={workers}
+			type="text"
+			id="worker"
+			name="worker"
+			placeholder="Wähle Mitarbeiter ..."
+		/>
+	</div>
+
+	<Button class="mr-2" on:click={() => addShift(dateClickObject, false, true)} disabled={!worker}
+		>Mitarbeiter kann arbeiten</Button
+	>
+	<Button class="mr-2" on:click={() => addShift(dateClickObject, true, true)} disabled={!worker}
+		>Mitarbeiter kann vielleicht arbeiten</Button
+	>
+</Modal>
+
+<Modal title="Termin bearbeiten?" bind:open={updateAdminModal} autoclose outsideclose size="sm">
+	{#if eventClickObject.event.extendedProps?.checked === false}
+		<Button on:click={() => updateEvent(eventClickObject, true)}>Termin bestätigen</Button>
+	{:else}
+		<Button on:click={() => updateEvent(eventClickObject, false)}
+			>Termin Bestätigung entfernen</Button
+		>
+	{/if}
 	<Button on:click={() => rmDate(eventClickObject)}>Termin entfernen</Button>
 </Modal>
 
-<Modal title="Termin verschieben?" bind:open={commitDragModal} autoclose size="sm">
-	<Button on:click={() => commitDragFunction(eventClickObject)}>Termin verschieben</Button>
+<Modal title="Termin verschieben?" bind:open={commitDragModal} autoclose outsideclose size="sm">
+	<Button on:click={() => updateEvent(eventClickObject)}>Termin verschieben</Button>
 </Modal>
