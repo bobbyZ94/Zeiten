@@ -17,8 +17,29 @@
 	let eventClickObject: any
 
 	let title: any
+	let titleUpdate: any
 	let description: any
+	let descriptionUpdate: any
 	let worker: any
+
+	// get all satur- and sundays till in 20 years
+	const d1 = new Date('2023-4-01')
+	const d2 = new Date('2043-4-01')
+	function getDatesInRange(startDate: any, endDate: any) {
+		const date = new Date(startDate.getTime())
+
+		const dates = []
+
+		while (date <= endDate) {
+			dates.push(new Date(date))
+			date.setDate(date.getDate() + 1)
+		}
+
+		return dates
+	}
+	const weekendDays = getDatesInRange(d1, d2).filter(
+		(date) => date.getDay() === 0 || date.getDay() === 6
+	)
 
 	let ec: any
 	let plugins = [DayGrid, Interaction]
@@ -27,6 +48,7 @@
 		firstDay: 1,
 		eventDurationEditable: false,
 		eventStartEditable: username === 'Admin' ? true : false,
+		highlightedDates: weekendDays,
 		eventDrop: async function (info: any) {
 			eventClickObject = info
 			setTimeout(() => (commitDragModal = true), 1)
@@ -52,6 +74,8 @@
 		eventClick: function (info: any) {
 			if (username === 'Admin') {
 				eventClickObject = info
+				titleUpdate = eventClickObject?.event?.title
+				descriptionUpdate = eventClickObject?.event?.extendedProps?.description
 				setTimeout(() => (updateAdminModal = true), 1)
 			} else if (info.event.title === username) {
 				eventClickObject = info
@@ -128,20 +152,38 @@
 		ec.refetchEvents()
 	}
 
-	async function updateEvent(eventClickObject: any, checked: boolean = false) {
+	async function updateEvent(
+		eventClickObject: any,
+		checked: boolean = false,
+		title = eventClickObject.event.title,
+		description = ''
+	) {
+		const start = eventClickObject.event.start
+		start.setHours(eventClickObject.event.extendedProps.username === 'Admin' ? 8 : 9)
+		const end = eventClickObject.event.end
+		end.setHours(eventClickObject.event.extendedProps.username === 'Admin' ? 8 : 9)
 		await fetch('/api/updateEvent', {
 			method: 'POST',
 			body: JSON.stringify({
-				start: eventClickObject.event.start,
-				end: eventClickObject.event.end,
+				start,
+				end,
 				id: eventClickObject.event.id,
-				checked
+				checked,
+				title,
+				description
 			}),
 			headers: {
 				'Content-Type': 'application/json'
 			}
 		})
 		ec.refetchEvents()
+	}
+
+	$: console.log(eventClickObject)
+
+	// reactively refetch when modal closes, so date gets visibly back to origin when canceled
+	$: if (commitDragModal === false) {
+		ec?.refetchEvents()
 	}
 </script>
 
@@ -215,15 +257,42 @@
 	>
 </Modal>
 
-<Modal title="Termin bearbeiten?" bind:open={updateAdminModal} autoclose outsideclose size="sm">
-	{#if eventClickObject.event.extendedProps?.checked === false}
-		<Button on:click={() => updateEvent(eventClickObject, true)}>Termin bestätigen</Button>
+<Modal
+	title={eventClickObject?.event?.extendedProps?.username === 'Admin'
+		? 'Termin bearbeiten'
+		: 'Mitarbeiter bearbeiten'}
+	bind:open={updateAdminModal}
+	autoclose
+	outsideclose
+	size="sm"
+>
+	{#if eventClickObject?.event?.extendedProps?.username === 'Admin'}
+		<div class="grid gap-3">
+			<div>
+				<Label for="titel" class="mb-2">Titel</Label>
+				<Input bind:value={titleUpdate} type="text" id="titel" name="titel" />
+			</div>
+			<div class="">
+				<Label for="titel" class="mb-2">Beschreibung</Label>
+				<Textarea bind:value={descriptionUpdate} type="text" id="titel" name="titel" />
+			</div>
+		</div>
+		<Button on:click={() => updateEvent(eventClickObject, false, titleUpdate, descriptionUpdate)}
+			>Änderung speichern</Button
+		>
+	{:else if eventClickObject.event.extendedProps?.checked === false}
+		<Button on:click={() => updateEvent(eventClickObject, true)}>Mitarbeiter bestätigen</Button>
 	{:else}
 		<Button on:click={() => updateEvent(eventClickObject, false)}
-			>Termin Bestätigung entfernen</Button
+			>Mitarbeiter Bestätigung entfernen</Button
 		>
 	{/if}
-	<Button on:click={() => rmDate(eventClickObject)}>Termin entfernen</Button>
+
+	<Button class="ml-3" on:click={() => rmDate(eventClickObject)}
+		>{eventClickObject?.event?.extendedProps?.username === 'Admin'
+			? 'Termin entfernen'
+			: 'Mitarbeiter entfernen'}</Button
+	>
 </Modal>
 
 <Modal title="Termin verschieben?" bind:open={commitDragModal} autoclose outsideclose size="sm">

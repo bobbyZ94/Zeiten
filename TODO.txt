@@ -1,0 +1,2 @@
+- Implement svelte superforms with form validation
+- Add Color event changing option to admin settings
