@@ -1,23 +1,30 @@
 <script lang="ts">
 	import '../app.postcss'
-	import { Navbar, Button, NavBrand } from 'flowbite-svelte'
+	import { Navbar, Button, NavBrand, Dropdown, DropdownItem, Toast } from 'flowbite-svelte'
+	import Cog from '~icons/mdi/cog'
 	export let data
 </script>
 
 <div class="flex h-screen w-full flex-col">
 	<Navbar class="z-20 px-3 py-5">
-		<NavBrand>
+		<NavBrand href="/">
 			<span class="self-center whitespace-nowrap text-xl font-semibold sm:text-2xl"
 				>Z E I T E N</span
 			>
 		</NavBrand>
 		{#if data.user}
-			<div>Hallo <span class="font-semibold">{data.user.username}</span> 😀</div>
-			<div class="h-8">
-				<form action="/logout" method="POST">
-					<Button size="sm" type="submit">Logout</Button>
-				</form>
+			<div>
+				Hallo <span class="font-semibold">{data.user.username} 😀</span>
 			</div>
+			<Button size="sm"><Cog /></Button>
+			<Dropdown>
+				{#if data.user.username === 'Admin'}
+					<DropdownItem href="/settings">Einstellungen</DropdownItem>
+				{/if}
+				<form action="/logout" method="POST">
+					<DropdownItem type="submit">Logout</DropdownItem>
+				</form>
+			</Dropdown>
 		{/if}
 	</Navbar>
 	<div class="flex-grow">

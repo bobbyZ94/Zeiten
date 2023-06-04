@@ -1,4 +1,4 @@
-import { redirect, type Handle } from '@sveltejs/kit';
+import { redirect, type Handle, error } from '@sveltejs/kit';
 import PocketBase from 'pocketbase';
 import { serializeNonPOJOs } from './lib/utils';
 
@@ -12,9 +12,17 @@ export const handle = (async ({ event, resolve }) => {
 		event.locals.user = undefined;
 	}
   
+	// Protect all pages
   if (!event.url.pathname.startsWith("/login")) {
     if(!event.locals.user) {
       throw redirect(303, "/login")
+    }
+  }
+
+	// Protect settings page
+	if (event.url.pathname.startsWith("/settings")) {
+    if(event.locals.user.username !== "Admin") {
+      throw error(403, "Access Forbidden")
     }
   }
 
