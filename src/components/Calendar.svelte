@@ -1,11 +1,18 @@
 <script lang="ts">
 	import { Modal, Button, Input, Label, Textarea, Select } from 'flowbite-svelte'
+	import { compactView } from '../stores/settingCompactView'
 	import Calendar from '@event-calendar/core'
 	import DayGrid from '@event-calendar/day-grid'
 	import Interaction from '@event-calendar/interaction'
+	import { getDatesInRange } from '../lib/utils'
+
+	// Current logged in user
 	export let username: any
+
+	// Array of current workers(users without Admin)
 	export let workers: any
 
+	// Booleans to open/close the modals
 	let shiftModal = false
 	let rmShiftModal = false
 	let adminChooseModal = false
@@ -13,34 +20,26 @@
 	let adminDateModal = false
 	let updateAdminModal = false
 	let commitDragModal = false
+
+	// Event and date objects storage
 	let dateClickObject: any
 	let eventClickObject: any
 
+	// Modal forms vars to bind values to
 	let title: any
 	let titleUpdate: any
 	let description: any
 	let descriptionUpdate: any
 	let worker: any
 
-	// get all satur- and sundays till in 20 years
+	// Generate array of weekend days till in 20 years to highlite in calendar
 	const d1 = new Date('2023-4-01')
 	const d2 = new Date('2043-4-01')
-	function getDatesInRange(startDate: any, endDate: any) {
-		const date = new Date(startDate.getTime())
-
-		const dates = []
-
-		while (date <= endDate) {
-			dates.push(new Date(date))
-			date.setDate(date.getDate() + 1)
-		}
-
-		return dates
-	}
 	const weekendDays = getDatesInRange(d1, d2).filter(
 		(date) => date.getDay() === 0 || date.getDay() === 6
 	)
 
+	// Init calendar
 	let ec: any
 	let plugins = [DayGrid, Interaction]
 	let options = {
@@ -56,7 +55,7 @@
 		buttonText: { today: 'Heute' },
 		eventContent: function (info: any) {
 			return `${info.event.title} ${info.event.extendedProps.checked ? '✔' : ''}
-			${info.event.extendedProps.description}`
+			${$compactView ? info.event.extendedProps.description : ''}`
 		},
 		dateClick: function (info: any) {
 			dateClickObject = info
@@ -178,8 +177,6 @@
 		})
 		ec.refetchEvents()
 	}
-
-	$: console.log(eventClickObject)
 
 	// reactively refetch when modal closes, so date gets visibly back to origin when canceled
 	$: if (commitDragModal === false) {

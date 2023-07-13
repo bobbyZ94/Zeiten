@@ -1,6 +1,8 @@
 <script lang="ts">
 	import '../app.postcss'
-	import { Navbar, Button, NavBrand, Dropdown, DropdownItem, Toast } from 'flowbite-svelte'
+	import { browser } from '$app/environment'
+	import { compactView } from '../stores/settingCompactView'
+	import { Navbar, Button, NavBrand, Dropdown, DropdownItem } from 'flowbite-svelte'
 	import Cog from '~icons/mdi/cog'
 	export let data
 </script>
@@ -21,6 +23,14 @@
 				{#if data.user.username === 'Admin'}
 					<DropdownItem href="/settings">Einstellungen</DropdownItem>
 				{/if}
+				<DropdownItem
+					><button
+						on:click={() => {
+							$compactView ? ($compactView = false) : ($compactView = true)
+							browser && location.reload()
+						}}>{$compactView ? 'Kompakte Ansicht' : 'Erweiterte Ansicht'}</button
+					></DropdownItem
+				>
 				<form action="/logout" method="POST">
 					<DropdownItem type="submit">Logout</DropdownItem>
 				</form>
