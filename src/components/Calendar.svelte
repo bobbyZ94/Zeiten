@@ -55,8 +55,12 @@
 		},
 		buttonText: { today: 'Heute' },
 		eventContent: function (info: any) {
-			return `${info.event.title} ${info.event.extendedProps.checked ? '✔' : ''}
-			${$compactView ? info.event.extendedProps.description : ''}`
+			return {
+				html: `<p class="break-all">${info.event.title} ${
+					info.event.extendedProps.checked ? '✔' : ''
+				}
+			${$compactView ? info.event.extendedProps.description : ''}</p>`
+			}
 		},
 		dateClick: function (info: any) {
 			dateClickObject = info
