@@ -43,6 +43,16 @@
 						}}>{$preferences.contrastView ? 'Verringerter Kontrast' : 'Erhöhter Kontrast'}</button
 					></DropdownItem
 				>
+				<DropdownItem
+					><button
+						on:click={() => {
+							$preferences.showSunday
+								? ($preferences.showSunday = false)
+								: ($preferences.showSunday = true)
+							browser && location.reload()
+						}}>{$preferences.showSunday ? 'Zeige keine Sonntage' : 'Zeige Sonntage'}</button
+					></DropdownItem
+				>
 				<form action="/logout" method="POST">
 					<DropdownItem type="submit">Logout</DropdownItem>
 				</form>

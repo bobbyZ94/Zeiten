@@ -53,6 +53,7 @@
 	let plugins = [DayGrid, Interaction]
 	let options = {
 		view: 'dayGridMonth',
+		hiddenDays: $preferences.showSunday === false ? [0] : [],
 		firstDay: 1,
 		eventDurationEditable: false,
 		eventStartEditable: username === 'Admin' ? true : false,
