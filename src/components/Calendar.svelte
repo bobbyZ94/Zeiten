@@ -20,6 +20,7 @@
 	let adminDateModal = false
 	let updateAdminModal = false
 	let commitDragModal = false
+	let eventInfoModal = false
 
 	// Event and date objects storage
 	let dateClickObject: any
@@ -79,6 +80,9 @@
 			} else if (info.event.title === username) {
 				eventClickObject = info
 				setTimeout(() => (rmShiftModal = true), 1)
+			} else {
+				eventClickObject = info
+				setTimeout(() => (eventInfoModal = true), 1)
 			}
 		},
 		eventSources: [
@@ -294,4 +298,20 @@
 
 <Modal title="Termin verschieben?" bind:open={commitDragModal} autoclose outsideclose size="sm">
 	<Button on:click={() => updateEvent(eventClickObject)}>Termin verschieben</Button>
+</Modal>
+
+<Modal
+	title={`${
+		eventClickObject?.event?.title ? eventClickObject?.event?.title : 'Termin Informationen'
+	}`}
+	bind:open={eventInfoModal}
+	autoclose
+	outsideclose
+	size="sm"
+>
+	<div>
+		{eventClickObject?.event?.extendedProps?.description
+			? eventClickObject?.event?.extendedProps?.description
+			: 'Keine Beschreibung verfügbar.'}
+	</div>
 </Modal>
