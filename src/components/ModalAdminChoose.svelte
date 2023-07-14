@@ -12,6 +12,6 @@
 	outsideclose
 	size="sm"
 >
-	<Button class="mr-2" on:click={() => (openModalAdminShift = true)}>Termin hinzufügen</Button>
-	<Button on:click={() => (openModalAdminDate = true)}>Mitarbeiter hinzufügen</Button>
+	<Button class="mr-2" on:click={() => (openModalAdminDate = true)}>Termin hinzufügen</Button>
+	<Button on:click={() => (openModalAdminShift = true)}>Mitarbeiter hinzufügen</Button>
 </Modal>

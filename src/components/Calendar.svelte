@@ -79,7 +79,7 @@
 				.filter((event: any) => event.extendedProps.username === username)
 			if (dateOnClickedDay.length === 0 && username !== 'Admin') {
 				setTimeout(() => (openModalUserAddShift = true), 1)
-			} else {
+			} else if (username === 'Admin') {
 				setTimeout(() => (openModalAdminChoose = true), 1)
 			}
 		},
