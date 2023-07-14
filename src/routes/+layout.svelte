@@ -53,6 +53,16 @@
 						}}>{$preferences.showSunday ? 'Zeige keine Sonntage' : 'Zeige Sonntage'}</button
 					></DropdownItem
 				>
+				<DropdownItem
+					><button
+						on:click={() => {
+							$preferences.showSaturday
+								? ($preferences.showSaturday = false)
+								: ($preferences.showSaturday = true)
+							browser && location.reload()
+						}}>{$preferences.showSaturday ? 'Zeige keine Samstage' : 'Zeige Samstage'}</button
+					></DropdownItem
+				>
 				<form action="/logout" method="POST">
 					<DropdownItem type="submit">Logout</DropdownItem>
 				</form>

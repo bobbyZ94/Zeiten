@@ -51,9 +51,12 @@
 	// Init calendar
 	let ec: any
 	let plugins = [DayGrid, Interaction]
+	let hiddenDays = []
+	if (!$preferences.showSaturday) hiddenDays.push(6)
+	if (!$preferences.showSunday) hiddenDays.push(0)
 	let options = {
 		view: 'dayGridMonth',
-		hiddenDays: $preferences.showSunday === false ? [0] : [],
+		hiddenDays: hiddenDays,
 		firstDay: 1,
 		eventDurationEditable: false,
 		eventStartEditable: username === 'Admin' ? true : false,
