@@ -70,14 +70,35 @@
 			${$preferences.compactView ? '' : info.event.extendedProps.description}</p>`
 			}
 		},
-		dateClick: function (info: any) {
+		dateClick: async function (info: any) {
 			dateClickObject = info
-			// only open modal if no date
-			const dateOnClickedDay = ec
-				.getEvents()
-				.filter((event: any) => event.start.toDateString() === info.date.toDateString())
-				.filter((event: any) => event.extendedProps.username === username)
-			if (dateOnClickedDay.length === 0 && username !== 'Admin') {
+			// Only open ModalUserAddShift if user has no shift on that day
+			const res = await fetch('/api/getEvents', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).then((res) => res.json())
+			// Get all events from current day where user === current user and not admin
+			const allEventsFromCurrentDay = res
+				.filter(
+					(event: any) =>
+						new Intl.DateTimeFormat('de-DE', {
+							year: 'numeric',
+							month: 'numeric',
+							day: 'numeric'
+						}).format(new Date(event.start)) ===
+						new Intl.DateTimeFormat('de-DE', {
+							year: 'numeric',
+							month: 'numeric',
+							day: 'numeric'
+						}).format(new Date(dateClickObject.date))
+				)
+				.filter((event: any) => username === event.extendedProps.username)
+				.filter((event: any) => event.username !== 'Admin')
+			console.log(allEventsFromCurrentDay)
+
+			if (allEventsFromCurrentDay < 1 && username !== 'Admin') {
 				setTimeout(() => (openModalUserAddShift = true), 1)
 			} else if (username === 'Admin') {
 				setTimeout(() => (openModalAdminChoose = true), 1)
