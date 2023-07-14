@@ -1,16 +1,42 @@
 <script lang="ts">
 	import { Modal, Button, Input, Label, Textarea, Select } from 'flowbite-svelte'
-	import { compactView } from '../stores/settingCompactView'
+	import { preferences } from '../stores/preferences'
 	import Calendar from '@event-calendar/core'
 	import DayGrid from '@event-calendar/day-grid'
 	import Interaction from '@event-calendar/interaction'
 	import { getDatesInRange } from '../lib/utils'
+	import { browser } from '$app/environment'
+	import { onMount } from 'svelte'
 
 	// Current logged in user
 	export let username: any
 
 	// Array of current workers(users without Admin)
 	export let workers: any
+
+	// Change contrast based on preference
+	function changeContrast() {
+		if (browser) {
+			let stylesheet = document.styleSheets[1]
+			if ($preferences.contrastView) {
+				stylesheet.insertRule(
+					'.ec-header { border: 3px solid #959595 !important; background-color: #cccecf }',
+					0
+				)
+				stylesheet.insertRule(
+					'.ec-body { border: 2px solid #959595 !important; border-top: 0px !important; }',
+					1
+				)
+				stylesheet.insertRule('.ec-day { border: 1px solid #959595 !important; }', 2)
+				stylesheet.insertRule('.ec-days { border-bottom: 1px solid #959595 !important; }', 3)
+				stylesheet.insertRule('.ec-header > .ec-days { border: 0px !important; }', 4)
+				stylesheet.insertRule('.ec-day-head { font-size: 22px !important; }', 5)
+			} else {
+				stylesheet.insertRule('.ec-header { border: 1px solid #dadce0 !important; }', 0)
+			}
+		}
+	}
+	$: $preferences.contrastView, changeContrast()
 
 	// Booleans to open/close the modals
 	let shiftModal = false
@@ -59,7 +85,7 @@
 				html: `<p class="break-all">${info.event.title} ${
 					info.event.extendedProps.checked ? '✔' : ''
 				}
-			${$compactView ? info.event.extendedProps.description : ''}</p>`
+			${$preferences.compactView ? '' : info.event.extendedProps.description}</p>`
 			}
 		},
 		dateClick: function (info: any) {

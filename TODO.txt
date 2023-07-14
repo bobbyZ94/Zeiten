@@ -1,2 +1,3 @@
 - Implement svelte superforms with form validation
 - add url to env file
+- add rc.refetch() to contrast and compact view setting instead of windo refresh

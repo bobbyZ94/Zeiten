@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.postcss'
 	import { browser } from '$app/environment'
-	import { compactView } from '../stores/settingCompactView'
+	import { preferences } from '../stores/preferences'
 	import { Navbar, Button, NavBrand, Dropdown, DropdownItem } from 'flowbite-svelte'
 	import Cog from '~icons/mdi/cog'
 	export let data
@@ -26,9 +26,21 @@
 				<DropdownItem
 					><button
 						on:click={() => {
-							$compactView ? ($compactView = false) : ($compactView = true)
+							$preferences.compactView
+								? ($preferences.compactView = false)
+								: ($preferences.compactView = true)
 							browser && location.reload()
-						}}>{$compactView ? 'Kompakte Ansicht' : 'Erweiterte Ansicht'}</button
+						}}>{$preferences.compactView ? 'Erweiterte Ansicht' : 'Kompakte Ansicht'}</button
+					></DropdownItem
+				>
+				<DropdownItem
+					><button
+						on:click={() => {
+							$preferences.contrastView
+								? ($preferences.contrastView = false)
+								: ($preferences.contrastView = true)
+							browser && location.reload()
+						}}>{$preferences.contrastView ? 'Verringerter Kontrast' : 'Erhöhter Kontrast'}</button
 					></DropdownItem
 				>
 				<form action="/logout" method="POST">
