@@ -4,7 +4,7 @@
 	import DayGrid from '@event-calendar/day-grid'
 	import Interaction from '@event-calendar/interaction'
 	import { getDatesInRange } from '../lib/calendar/getDatesInRange'
-	import { changeContrast } from '../lib/calendar/changeContrast'
+	// import { changeContrast } from '../lib/calendar/changeContrast'
 	import ModalEventInfo from './ModalEventInfo.svelte'
 	import ModalCommitDrag from './ModalCommitDrag.svelte'
 	import ModalAdminUpdate from './ModalAdminUpdate.svelte'
@@ -114,7 +114,7 @@
 				titleUpdate = eventClickObject?.event?.title
 				descriptionUpdate = eventClickObject?.event?.extendedProps?.description
 				setTimeout(() => (openModalAdminUpdate = true), 1)
-			} else if (info.event.title === username) {
+			} else if (info.event.extendedProps.username === username) {
 				eventClickObject = info
 				setTimeout(() => (openModalUserRmShift = true), 1)
 			} else {
@@ -136,7 +136,7 @@
 	}
 
 	// Change contrast based on preference
-	$: $preferences.contrastView, changeContrast($preferences)
+	// $: $preferences.contrastView, changeContrast($preferences)
 </script>
 
 <Calendar bind:this={ec} {plugins} {options} />

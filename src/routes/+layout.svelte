@@ -3,8 +3,12 @@
 	import { browser } from '$app/environment'
 	import { preferences } from '../stores/preferences'
 	import { Navbar, Button, NavBrand, Dropdown, DropdownItem } from 'flowbite-svelte'
+	import ModalLegende from '../components/ModalLegende.svelte'
 	import Cog from '~icons/mdi/cog'
 	export let data
+
+	// Legende Modal
+	let openModalLegende = false
 </script>
 
 <div class="flex h-screen w-full flex-col">
@@ -24,6 +28,9 @@
 					<DropdownItem href="/settings">Einstellungen</DropdownItem>
 				{/if}
 				<DropdownItem
+					><button on:click={() => (openModalLegende = true)}>Legende</button></DropdownItem
+				>
+				<DropdownItem
 					><button
 						on:click={() => {
 							$preferences.compactView
@@ -33,7 +40,7 @@
 						}}>{$preferences.compactView ? 'Erweiterte Ansicht' : 'Kompakte Ansicht'}</button
 					></DropdownItem
 				>
-				<DropdownItem
+				<!-- <DropdownItem
 					><button
 						on:click={() => {
 							$preferences.contrastView
@@ -42,7 +49,7 @@
 							browser && location.reload()
 						}}>{$preferences.contrastView ? 'Verringerter Kontrast' : 'Erhöhter Kontrast'}</button
 					></DropdownItem
-				>
+				> -->
 				<DropdownItem
 					><button
 						on:click={() => {
@@ -73,3 +80,5 @@
 		<slot />
 	</div>
 </div>
+
+<ModalLegende bind:openModalLegende />

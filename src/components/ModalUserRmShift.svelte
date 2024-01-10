@@ -6,6 +6,6 @@
 	export let eventClickObject: any
 </script>
 
-<Modal title="Schicht entfernen?" bind:open={openModalUserRmShift} autoclose outsideclose size="sm">
-	<Button on:click={() => rmDate(ec, eventClickObject)}>Schicht entfernen</Button>
+<Modal title="Termin entfernen?" bind:open={openModalUserRmShift} autoclose outsideclose size="sm">
+	<Button on:click={() => rmDate(ec, eventClickObject)}>Termin entfernen</Button>
 </Modal>

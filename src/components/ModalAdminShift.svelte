@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Modal, Label, Select, Button } from 'flowbite-svelte'
 	import { addShift } from '../lib/calendar/addShift'
+	import { addVacation } from '$lib/calendar/addVacation'
 	export let openModalAdminShift: boolean
 	export let workers: any
 	export let worker: string
@@ -37,5 +38,10 @@
 		class="mr-2"
 		on:click={() => addShift(ec, worker, username, dateClickObject, true, true)}
 		disabled={!worker}>Mitarbeiter kann vielleicht arbeiten</Button
+	>
+	<Button
+		class="mr-2"
+		on:click={() => addVacation(ec, worker, username, dateClickObject, true)}
+		disabled={!worker}>Mitarbeiter hat Urlaub</Button
 	>
 </Modal>
