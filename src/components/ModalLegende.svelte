@@ -30,7 +30,6 @@
 				<div class="h-6 w-6 rounded-lg bg-orange-300" />
 				<div class="">Betriebsfreier Tag</div>
 			</li>
-			98
 		</ul>
 	</div>
 </Modal>
