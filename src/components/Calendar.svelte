@@ -68,10 +68,12 @@
 		buttonText: { today: 'Heute' },
 		eventContent: function (info: any) {
 			return {
-				html: `<p class="break-all">${info.event.title} ${
-					info.event.extendedProps.checked ? '✔' : ''
-				}
-			${$preferences.compactView ? '' : info.event.extendedProps.description}</p>`
+				html: `<p class="break-all">
+					${info.event.title} 
+					${info.event.extendedProps.endShiftTime && 'bis ' + info.event.extendedProps.endShiftTime + ' Uhr'}
+					${info.event.extendedProps.checked ? '✔' : ''}
+					${$preferences.compactView ? '' : info.event.extendedProps.description}
+				</p>`
 			}
 		},
 		dateClick: async function (info: any) {

@@ -4,7 +4,8 @@ export async function addShift(
 	username: any,
 	dateClickObject: any,
 	maybe: boolean,
-	admin: boolean = false
+	admin: boolean = false,
+	endShiftTime: any
 ) {
 	const start = dateClickObject.date
 	start.setHours(9)
@@ -17,7 +18,8 @@ export async function addShift(
 			end,
 			title: admin ? worker : username,
 			backgroundColor: maybe ? 'gray' : 'green',
-			username: admin ? worker : username
+			username: admin ? worker : username,
+			endShiftTime
 		}),
 		headers: {
 			'Content-Type': 'application/json'

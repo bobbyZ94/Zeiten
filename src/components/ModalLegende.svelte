@@ -5,7 +5,7 @@
 
 <Modal title="Legende" bind:open={openModalLegende} autoclose outsideclose size="sm">
 	<div>
-		<ul class="flex flex-col gap-3">
+		<ul class="flex flex-col justify-items-start gap-3">
 			<li class="flex items-center justify-center gap-3">
 				<div class="h-6 w-6 rounded-lg bg-red-600" />
 				<div class="">Arbeitstermin</div>
